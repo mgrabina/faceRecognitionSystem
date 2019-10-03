@@ -9,6 +9,8 @@ from os.path import join, isdir
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn import svm
+
+from library.utils import getImages
 from methods import *
 from scipy import ndimage as im
 
@@ -21,7 +23,6 @@ class PCA(object):
         if PCA.trained == False:
             PCA.trained = True
             mypath = '../att_faces/'
-            onlydirs = [f for f in listdir(mypath) if isdir(join(mypath, f))]
 
             # image size
             horsize = 92
@@ -40,26 +41,8 @@ class PCA(object):
             person = np.zeros([trnno, 1])
             imno = 0
             per = 0
-            for dire in onlydirs:
-                for k in range(1, trnperper + 1):
-                    a = plt.imread(mypath + dire + '/{}'.format(k) + '.pgm') / 255.0
-                    images[imno, :] = np.reshape(a, [1, areasize])
-                    person[imno, 0] = per
-                    imno += 1
-                per += 1
-
-            # TEST SET
-            imagetst = np.zeros([tstno, areasize])
-            persontst = np.zeros([tstno, 1])
-            imno = 0
-            per = 0
-            for dire in onlydirs:
-                for k in range(trnperper, 10):
-                    a = plt.imread(mypath + dire + '/{}'.format(k) + '.pgm') / 255.0
-                    imagetst[imno, :] = np.reshape(a, [1, areasize])
-                    persontst[imno, 0] = per
-                    imno += 1
-                per += 1
+            onlydirs = [f for f in listdir(mypath) if isdir(join(mypath, f))]
+            images, imagetst, trainingNames, testNames = getImages("../att_faces/", 112 * 92,10, 40,6, 4)
 
             # CARA MEDIA
             meanimage = np.mean(images, 0)
@@ -113,7 +96,7 @@ class PCA(object):
             B = V[0:60, :]
             improy = np.dot(images, np.transpose(B))
             clf = svm.LinearSVC()
-            clf.fit(improy, person.ravel())
+            clf.fit(improy, trainingNames)
             picture -= meanimage
             pictureProy = np.dot(picture, B.T)
             print("Subject is: {} \n".format(clf.predict(pictureProy)[0]))
