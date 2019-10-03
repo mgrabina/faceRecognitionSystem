@@ -15,8 +15,12 @@ from methods import *
 class PCA(object):
 
     @staticmethod
-    def pca():
-        print "Starting"
+    def train():
+        if type == 'test':
+            print "Testing"
+        elif type == 'predict':
+            print "Predicting"
+
         mypath = '../att_faces/'
         onlydirs = [f for f in listdir(mypath) if isdir(join(mypath, f))]
 
@@ -95,5 +99,10 @@ class PCA(object):
         axes.grid(which='Both')
         fig.suptitle('Error')
 
+    @staticmethod
+    def test(self):
+        self.train('test')
 
-
+    @staticmethod
+    def predict(self, image):
+        self.train('predict')

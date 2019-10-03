@@ -17,7 +17,13 @@ class KPCA(object):
     def __init__(self):
         pass
 
-    def train(self):
+    @staticmethod
+    def train(self, type):
+        if type == 'test':
+            print "Testing"
+        elif type == 'predict':
+            print "Predicting"
+
         mypath = '../att_faces/'
         onlydirs = [f for f in listdir(mypath) if isdir(join(mypath, f))]
 
@@ -99,13 +105,9 @@ class KPCA(object):
         self.nmax = alpha.shape[1]
         self.nmax = 100
         self.accs = np.zeros([self.nmax, 1])
-        
 
-    def test(self):
-        print "Starting"
-        self.train()
         for neigen in range(1, self.nmax):
-            # Me quedo sólo con las primeras autocaras   
+            # Me quedo sólo con las primeras autocaras
             # proyecto
             improy = self.improypre[:, 0:neigen]
             imtstproy = self.imtstproypre[:, 0:neigen]
@@ -122,9 +124,13 @@ class KPCA(object):
         axes.set_xlabel('No. autocaras')
         axes.grid(which='Both')
         fig.suptitle('Error')
-        
 
+    @staticmethod
+    def test(self):
+        self.train('test')
+
+    @staticmethod
     def predict(self, image):
-        self.train()
+        self.train('predict')
 
 
