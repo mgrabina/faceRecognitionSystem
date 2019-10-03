@@ -83,8 +83,7 @@ class KPCA(object):
                 clf = svm.LinearSVC()
                 clf.fit(improy, training_names)
                 accs[neigen] = clf.score(imtstproy, test_names)
-                # print('Precisión con {0} autocaras: {1} %\n'.format(neigen, accs[neigen] * 100))
-                print('{0}\n'.format(accs[neigen] * 100))
+                print('Precisión con {0} autocaras: {1} %\n'.format(neigen, accs[neigen] * 100))
 
             fig, axes = plt.subplots(1, 1)
             axes.semilogy(range(nmax), (1 - accs) * 100)
@@ -113,9 +112,15 @@ class KPCA(object):
             k_test = k_test - np.dot(uno_ml, K) - np.dot(k_test, unoM) + np.dot(uno_ml, np.dot(K, unoM))
             im_test_projection_pre = np.dot(k_test, alpha)
             picture_projection = im_test_projection_pre[:,0:60]
-            print("Subject is: {} \n".format(clf.predict(picture_projection)[0]))
 
+            sub = clf.predict(picture_projection)[0]
+            print("Subject is: {} \n".format(sub))
 
+            picture = im.imread(images_directory + '/' + sub + '/1.pgm')
+            fig, axes = plt.subplots(1, 1)
+            axes.imshow(picture, cmap='gray')
+            fig.suptitle('Subject Predicted')
+            plt.show()
     @staticmethod
     def test(data):
         KPCA.train('test', data)

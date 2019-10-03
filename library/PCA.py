@@ -66,8 +66,7 @@ class PCA(object):
                 clf = svm.LinearSVC()
                 clf.fit(improy, training_names)
                 accs[neigen] = clf.score(imtstproy, test_names)
-#                print('Precisión con {0} autocaras: {1} %\n'.format(neigen, accs[neigen] * 100))
-                print('{0},{1}\n'.format(neigen, accs[neigen] * 100))
+                print('Precisión con {0} autocaras: {1} %\n'.format(neigen, accs[neigen] * 100))
 
             fig, axes = plt.subplots(1, 1)
             axes.semilogy(range(nmax), (1 - accs) * 100)
@@ -90,7 +89,14 @@ class PCA(object):
             clf.fit(improy, training_names)
             picture -= meanimage
             pictureProy = np.dot(picture, B.T)
-            print("Subject is: {} \n".format(clf.predict(pictureProy)[0]))
+            sub = clf.predict(pictureProy)[0]
+            print("Subject is: {} \n".format(sub))
+
+            picture = im.imread(images_directory + '/' + sub + '/1.pgm')
+            fig, axes = plt.subplots(1, 1)
+            axes.imshow(picture, cmap='gray')
+            fig.suptitle('Subject Predicted')
+            plt.show()
         else:
             print "Error"
 
