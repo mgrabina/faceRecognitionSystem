@@ -4,8 +4,7 @@ from library.KPCA import KPCA
 def main():
     # pca = PCA()
     # pca.test()
-    kpca = KPCA()
-    kpca.test()
+    PCA.pca()
 
 
 if __name__ == "__main__":

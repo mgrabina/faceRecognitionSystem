@@ -14,7 +14,7 @@ def QR(matrix):
 
     for i in range(100):
         print i
-        q, r = householder_reflection(matrix)
+        q, r = gram_schmidt_method(matrix)
         rq = r.dot(q)
         eigen_vectors = eigen_vectors.dot(q)
         if np.allclose(rq, np.triu(rq), atol=1e-4):
