@@ -24,7 +24,10 @@ def QR(matrix):
     return eigen_values[sort], eigen_vectors[sort]
 
 
+# @author Martin Grabina (No Juan.)
 def gram_schmidt_method(matrix):
+    matrix = np.matrix(matrix)
+
     columns_counter = 0
     n, m = np.shape(matrix)
     q = np.empty([n, n])
@@ -32,7 +35,9 @@ def gram_schmidt_method(matrix):
     for iterable in matrix.T:
         copy = np.copy(iterable)
         for i in range(0, columns_counter):
-            projection = np.dot(np.dot(q[:, i].T, iterable), q[:, i])
+            line = np.asmatrix(q[:, i])
+            line_t = np.asmatrix(q[:, i].T)
+            projection = np.dot(np.dot(line_t, iterable.T), line)
             copy -= projection
         e = copy / np.linalg.norm(copy)
         q[:, columns_counter] = e
@@ -41,20 +46,46 @@ def gram_schmidt_method(matrix):
     r = np.dot(q.T, matrix)
     return q, r
 
+def householder_reflection(A):
+    """Perform QR decomposition of matrix A using Householder reflection."""
+    (num_rows, num_cols) = np.shape(A)
 
-def getSingluarValuesAndEigenVectors(matrix):
-    n, m = matrix.shape
-    if m > n:
-        transpose_mult = matrix.dot(matrix.T)
-        values, vectors = getEigenValues(transpose_mult)
-        v = matrix.T.dot(vectors)
-        values = np.sqrt(abs(values))
-        diag_values = np.diag(values)
-        v = v.dot(diag_values)
-        for i in range(diag_values.shape[0]):
-            diag_values[i, i] = 1 / diag_values[i, i]
-        return values, np.asmatrix(v.T)
-    transpose_mult = matrix.T.dot(matrix)
-    values, vectors = getEigenValues(transpose_mult)
-    values = np.sqrt(values)
-    return values, np.asmatrix(vectors)
+    # Initialize orthogonal matrix Q and upper triangular matrix R.
+    Q = np.identity(num_rows)
+    R = np.copy(A)
+
+    # Iterative over column sub-vector and
+    # compute Householder matrix to zero-out lower triangular matrix entries.
+    for cnt in range(num_rows - 1):
+        x = R[cnt:, cnt]
+
+        e = np.zeros_like(x)
+        e[0] = copysign(np.linalg.norm(x), -A[cnt, cnt])
+        u = x + e
+        v = u / np.linalg.norm(u)
+
+        Q_cnt = np.identity(num_rows)
+        Q_cnt[cnt:, cnt:] -= 2.0 * np.outer(v, v)
+
+        R = np.dot(Q_cnt, R)
+        Q = np.dot(Q, Q_cnt.T)
+
+    return (Q, R)
+
+def getSingluarValuesAndEigenVectors(A):
+    m,n = A.shape
+    if n > m:
+        aux = A.dot(A.T)
+        S, U = getEigenValues(aux)
+        S = np.sqrt(abs(S))
+        V = A.T.dot(U)
+        S1 = np.diag(S)
+        for k in range(S1.shape[0]):
+            S1[k,k] = 1/S1[k,k]
+
+        V = V.dot(S1)
+        return S, np.asmatrix(V.T)
+    aux = A.T.dot(A)
+    S,V = getEigenValues(aux)
+    S = np.sqrt(S)
+    return S, np.asmatrix(V)
