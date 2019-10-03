@@ -24,7 +24,6 @@ def QR(matrix):
     return eigen_values[sort], eigen_vectors[sort]
 
 
-# @author Martin Grabina (No Juan.)
 def gram_schmidt_method(matrix):
     matrix = np.matrix(matrix)
 
@@ -46,31 +45,22 @@ def gram_schmidt_method(matrix):
     r = np.dot(q.T, matrix)
     return q, r
 
-def householder_reflection(A):
-    """Perform QR decomposition of matrix A using Householder reflection."""
-    (num_rows, num_cols) = np.shape(A)
-
-    # Initialize orthogonal matrix Q and upper triangular matrix R.
-    Q = np.identity(num_rows)
-    R = np.copy(A)
-
-    # Iterative over column sub-vector and
-    # compute Householder matrix to zero-out lower triangular matrix entries.
-    for cnt in range(num_rows - 1):
-        x = R[cnt:, cnt]
-
+def householder_reflection(matrix):
+    n, m = np.shape(matrix)
+    r = np.copy(matrix)
+    q = np.identity(n)
+    for iter in range(n-1):
+        x = r[iter:, iter]
         e = np.zeros_like(x)
-        e[0] = copysign(np.linalg.norm(x), -A[cnt, cnt])
+        e[0] = copysign(np.linalg.norm(x), -matrix[iter, iter])
         u = x + e
         v = u / np.linalg.norm(u)
+        counter = np.identity(n)
+        counter[iter:, iter:] -= 2.0 * np.outer(v, v)
+        q = np.dot(q, counter.T)
+        r = np.dot(counter, r)
 
-        Q_cnt = np.identity(num_rows)
-        Q_cnt[cnt:, cnt:] -= 2.0 * np.outer(v, v)
-
-        R = np.dot(Q_cnt, R)
-        Q = np.dot(Q, Q_cnt.T)
-
-    return (Q, R)
+    return q, r
 
 def getSingluarValuesAndEigenVectors(A):
     m,n = A.shape
