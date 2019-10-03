@@ -9,6 +9,8 @@ from os.path import join, isdir
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn import svm
+from methods import *
+from numericalMethods import *
 
 mypath      = '../att_faces/'
 onlydirs    = [f for f in listdir(mypath) if isdir(join(mypath, f))]
@@ -60,9 +62,8 @@ K = (np.dot(images,images.T)/trnno+1)**degree
 unoM = np.ones([trnno,trnno])/trnno
 K = K - np.dot(unoM,K) - np.dot(K,unoM) + np.dot(unoM,np.dot(K,unoM))
 
-
 #Autovalores y autovectores
-w,alpha = np.linalg.eigh(K)
+w,alpha = getEigenValues(K)
 lambdas = w/trnno
 lambdas = w
 

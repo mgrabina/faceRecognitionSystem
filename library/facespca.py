@@ -9,6 +9,7 @@ from os.path import join, isdir
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn import svm
+from methods import *
 
 mypath      = '../att_faces/'
 onlydirs    = [f for f in listdir(mypath) if isdir(join(mypath, f))]
@@ -64,7 +65,8 @@ images  = [images[k,:]-meanimage for k in range(images.shape[0])]
 imagetst= [imagetst[k,:]-meanimage for k in range(imagetst.shape[0])]
 
 #PCA
-U,S,V = np.linalg.svd(images,full_matrices = False)
+images_matrix = np.asmatrix(images)
+S,V = getSingluarValuesAndEigenVectors(images_matrix)
 
 #Primera autocara...
 eigen1 = (np.reshape(V[0,:],[versize,horsize]))*255
