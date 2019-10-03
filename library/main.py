@@ -1,12 +1,15 @@
 from library.PCA import PCA
 from library.KPCA import KPCA
 import configparser
+from datetime import datetime
 
 def main():
     config = configparser.ConfigParser()
     config.read('config.ini')
     method = config.get('ACTION', 'METHOD')
     query = config.get('ACTION', 'QUERY')
+
+    start = datetime.now()
 
     data = {
         'faces': config.getint('ACTION', 'FACES'),
@@ -43,6 +46,11 @@ def main():
             print 'Bad Query'
     else:
         print 'Bad Query'
+
+    duration = datetime.now() - start
+    print ("Duration: {0}".format(duration.seconds))
+
+    exit(0)
 
 
 if __name__ == "__main__":

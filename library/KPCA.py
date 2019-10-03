@@ -83,7 +83,8 @@ class KPCA(object):
                 clf = svm.LinearSVC()
                 clf.fit(improy, training_names)
                 accs[neigen] = clf.score(imtstproy, test_names)
-                print('Precisión con {0} autocaras: {1} %\n'.format(neigen, accs[neigen] * 100))
+                # print('Precisión con {0} autocaras: {1} %\n'.format(neigen, accs[neigen] * 100))
+                print('{0}\n'.format(accs[neigen] * 100))
 
             fig, axes = plt.subplots(1, 1)
             axes.semilogy(range(nmax), (1 - accs) * 100)

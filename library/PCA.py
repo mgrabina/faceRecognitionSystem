@@ -19,7 +19,6 @@ class PCA(object):
 
     @staticmethod
     def train(type, data):
-        # Manage Images
         images_directory = data['images_dir']; area = data['v_size'] * data['h_size']
         images_per_person = data['images_quantity_per_person']; number_of_people = data['people_quantity']
         training_n = data['training_n']; test_n = data['test_n']
@@ -44,17 +43,13 @@ class PCA(object):
                 break
             person_image = 0
 
-        # CARA MEDIA
         meanimage = np.mean(images, 0)
         fig, axes = plt.subplots(1, 1)
         axes.imshow(np.reshape(meanimage, [data['v_size'], data['h_size']]) * 255, cmap='gray')
         fig.suptitle('Imagen media')
 
-        # resto la media
         images = [images[k, :] - meanimage for k in range(images.shape[0])]
         imagetst = [imagetst[k, :] - meanimage for k in range(imagetst.shape[0])]
-
-        # PCA
         images_matrix = np.asmatrix(images)
         S, V = getSingluarValuesAndEigenVectors(images_matrix)
 
@@ -65,18 +60,14 @@ class PCA(object):
         if type == 'test':
             print "Testing..."
             for neigen in range(1, nmax):
-                # Me quedo sólo con las primeras autocaras
                 B = V[0:neigen, :]
-                # proyecto
                 improy = np.dot(images, np.transpose(B))
                 imtstproy = np.dot(imagetst, np.transpose(B))
-
-                # SVM
-                # entreno
                 clf = svm.LinearSVC()
                 clf.fit(improy, training_names)
                 accs[neigen] = clf.score(imtstproy, test_names)
-                print('Precisión con {0} autocaras: {1} %\n'.format(neigen, accs[neigen] * 100))
+#                print('Precisión con {0} autocaras: {1} %\n'.format(neigen, accs[neigen] * 100))
+                print('{0},{1}\n'.format(neigen, accs[neigen] * 100))
 
             fig, axes = plt.subplots(1, 1)
             axes.semilogy(range(nmax), (1 - accs) * 100)
