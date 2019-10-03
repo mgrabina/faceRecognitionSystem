@@ -13,6 +13,7 @@ def QR(matrix):
     eigen_vectors = np.identity(matrix.shape[0])
 
     for i in range(100):
+        print i
         q, r = gram_schmidt_method(matrix)
         rq = r.dot(q)
         eigen_vectors = eigen_vectors.dot(q)
@@ -26,12 +27,11 @@ def QR(matrix):
 def gram_schmidt_method(matrix):
     columns_counter = 0
     n, m = np.shape(matrix)
-    q = np.empty([n, m])
+    q = np.empty([n, n])
 
     for iterable in matrix.T:
         copy = np.copy(iterable)
         for i in range(0, columns_counter):
-            print i
             projection = np.dot(np.dot(q[:, i].T, iterable), q[:, i])
             copy -= projection
         e = copy / np.linalg.norm(copy)
