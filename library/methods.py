@@ -11,10 +11,12 @@ def getEigenValues(matrix):
 
 def QR(matrix):
     eigen_vectors = np.identity(matrix.shape[0])
+    iterations = 100
 
-    for i in range(100):
-        print i
-        q, r = householder_reflection(matrix)
+    for i in range(iterations):
+        if i % 10 == 0:
+            print "" + str(i * 100 / iterations) + "%"
+        q, r = gram_schmidt_method(matrix)
         rq = r.dot(q)
         eigen_vectors = eigen_vectors.dot(q)
         if np.allclose(rq, np.triu(rq), atol=1e-4):
@@ -45,25 +47,9 @@ def gram_schmidt_method(matrix):
     r = np.dot(q.T, matrix)
     return q, r
 
-def householder_reflection(matrix):
-    n, m = np.shape(matrix)
-    r = np.copy(matrix)
-    q = np.identity(n)
-    for iter in range(n-1):
-        x = r[iter:, iter]
-        e = np.zeros_like(x)
-        e[0] = copysign(np.linalg.norm(x), -matrix[iter, iter])
-        u = x + e
-        v = u / np.linalg.norm(u)
-        counter = np.identity(n)
-        counter[iter:, iter:] -= 2.0 * np.outer(v, v)
-        q = np.dot(q, counter.T)
-        r = np.dot(counter, r)
-
-    return q, r
 
 def getSingluarValuesAndEigenVectors(A):
-    m,n = A.shape
+    m, n = A.shape
     if n > m:
         aux = A.dot(A.T)
         S, U = getEigenValues(aux)
@@ -71,11 +57,11 @@ def getSingluarValuesAndEigenVectors(A):
         V = A.T.dot(U)
         S1 = np.diag(S)
         for k in range(S1.shape[0]):
-            S1[k,k] = 1/S1[k,k]
+            S1[k, k] = 1 / S1[k, k]
 
         V = V.dot(S1)
         return S, np.asmatrix(V.T)
     aux = A.T.dot(A)
-    S,V = getEigenValues(aux)
+    S, V = getEigenValues(aux)
     S = np.sqrt(S)
     return S, np.asmatrix(V)
