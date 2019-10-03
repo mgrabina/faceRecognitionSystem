@@ -63,7 +63,7 @@ class KPCA(object):
         alpha = np.fliplr(alpha)
 
         for col in range(alpha.shape[1]):
-            alpha[:, col] = alpha[:, col] / np.sqrt(lambdas[col])
+            alpha[:, col] = alpha[:, col] / np.sqrt(abs(lambdas[col]))
 
         improypre = np.dot(K.T, alpha)
         uno_ml = np.ones([total_test_pic, total_pic]) / total_pic
