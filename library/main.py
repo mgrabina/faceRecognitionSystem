@@ -5,7 +5,7 @@ from datetime import datetime
 
 def main():
     config = configparser.ConfigParser()
-    config.read('custom_images_config_example.ini')
+    config.read('config.ini')
     method = config.get('ACTION', 'METHOD')
     query = config.get('ACTION', 'QUERY')
 
