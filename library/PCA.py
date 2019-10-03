@@ -15,7 +15,7 @@ from methods import *
 class PCA(object):
 
     @staticmethod
-    def train():
+    def train(type):
         if type == 'test':
             print "Testing"
         elif type == 'predict':
@@ -100,9 +100,9 @@ class PCA(object):
         fig.suptitle('Error')
 
     @staticmethod
-    def test(self):
-        self.train('test')
+    def test():
+        PCA.train('test')
 
     @staticmethod
-    def predict(self, image):
-        self.train('predict')
+    def predict(image):
+        PCA.train('predict')

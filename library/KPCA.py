@@ -18,7 +18,7 @@ class KPCA(object):
         pass
 
     @staticmethod
-    def train(self, type):
+    def train(type):
         if type == 'test':
             print "Testing"
         elif type == 'predict':
@@ -33,35 +33,35 @@ class KPCA(object):
         areasize = horsize * versize
 
         # number of figures
-        self.personno = 40
+        personno = 40
         trnperper = 9
         tstperper = 1
-        trnno = self.personno * trnperper
-        tstno = self.personno * tstperper
+        trnno = personno * trnperper
+        tstno = personno * tstperper
 
         # TRAINING SET
         images = np.zeros([trnno, areasize])
-        self.person = np.zeros([trnno, 1])
+        person = np.zeros([trnno, 1])
         imno = 0
         per = 0
         for dire in onlydirs:
             for k in range(1, trnperper + 1):
                 a = plt.imread(mypath + dire + '/{}'.format(k) + '.pgm')
                 images[imno, :] = (np.reshape(a, [1, areasize]) - 127.5) / 127.5
-                self.person[imno, 0] = per
+                person[imno, 0] = per
                 imno += 1
             per += 1
 
         # TEST SET
         imagetst = np.zeros([tstno, areasize])
-        self.persontst = np.zeros([tstno, 1])
+        persontst = np.zeros([tstno, 1])
         imno = 0
         per = 0
         for dire in onlydirs:
             for k in range(trnperper, 10):
                 a = plt.imread(mypath + dire + '/{}'.format(k) + '.pgm')
                 imagetst[imno, :] = (np.reshape(a, [1, areasize]) - 127.5) / 127.5
-                self.persontst[imno, 0] = per
+                persontst[imno, 0] = per
                 imno += 1
             per += 1
 
@@ -87,11 +87,11 @@ class KPCA(object):
             alpha[:, col] = alpha[:, col] / np.sqrt(lambdas[col])
 
         # pre-proyección
-        self.improypre = np.dot(K.T, alpha)
+        improypre = np.dot(K.T, alpha)
         unoML = np.ones([tstno, trnno]) / trnno
         Ktest = (np.dot(imagetst, images.T) / trnno + 1) ** degree
         Ktest = Ktest - np.dot(unoML, K) - np.dot(Ktest, unoM) + np.dot(unoML, np.dot(K, unoM))
-        self.imtstproypre = np.dot(Ktest, alpha)
+        imtstproypre = np.dot(Ktest, alpha)
 
         # from sklearn.decomposition import KernelPCA
 
@@ -99,38 +99,38 @@ class KPCA(object):
         # kpca = KernelPCA(n_components = None, kernel='poly', degree=2)
         # kpca.fit(images)
 
-        # self.improypre = kpca.transform(images)
-        # self.imtstproypre = kpca.transform(imagetst)
+        # improypre = kpca.transform(images)
+        # imtstproypre = kpca.transform(imagetst)
 
-        self.nmax = alpha.shape[1]
-        self.nmax = 100
-        self.accs = np.zeros([self.nmax, 1])
+        nmax = alpha.shape[1]
+        nmax = 100
+        accs = np.zeros([nmax, 1])
 
-        for neigen in range(1, self.nmax):
+        for neigen in range(1, nmax):
             # Me quedo sólo con las primeras autocaras
             # proyecto
-            improy = self.improypre[:, 0:neigen]
-            imtstproy = self.imtstproypre[:, 0:neigen]
+            improy = improypre[:, 0:neigen]
+            imtstproy = imtstproypre[:, 0:neigen]
 
             # SVM
             # entreno
             clf = svm.LinearSVC()
-            clf.fit(improy, self.person.ravel())
-            self.accs[neigen] = clf.score(imtstproy, self.persontst.ravel())
-            print('Precisión con {0} autocaras: {1} %\n'.format(neigen, self.accs[neigen] * 100))
+            clf.fit(improy, person.ravel())
+            accs[neigen] = clf.score(imtstproy, persontst.ravel())
+            print('Precisión con {0} autocaras: {1} %\n'.format(neigen, accs[neigen] * 100))
 
         fig, axes = plt.subplots(1, 1)
-        axes.semilogy(range(self.nmax), (1 - self.accs) * 100)
+        axes.semilogy(range(nmax), (1 - accs) * 100)
         axes.set_xlabel('No. autocaras')
         axes.grid(which='Both')
         fig.suptitle('Error')
 
     @staticmethod
-    def test(self):
-        self.train('test')
+    def test():
+        KPCA.train('test')
 
     @staticmethod
-    def predict(self, image):
-        self.train('predict')
+    def predict(image):
+        KPCA.train('predict')
 
 
