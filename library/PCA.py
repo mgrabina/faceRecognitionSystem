@@ -10,7 +10,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn import svm
 
-from library.utils import getImages
 from methods import *
 from scipy import ndimage as im
 
@@ -42,7 +41,31 @@ class PCA(object):
             imno = 0
             per = 0
             onlydirs = [f for f in listdir(mypath) if isdir(join(mypath, f))]
-            images, imagetst, trainingNames, testNames = getImages("../att_faces/", 112 * 92,10, 40,6, 4)
+
+            # Manage Images
+            images_directory = data['images_dir']; area = data['v_size'] * data['h_size']
+            images_per_person = data['images_quantity_per_person']; number_of_people = data['people_quantity']
+            training_n = data['training_n']; test_n = data['test_n']
+            subjects = [f for f in listdir(images_directory) if isdir(join(images_directory, f))]
+            images = np.zeros([training_n * number_of_people, area])
+            imagetst = np.zeros([test_n * number_of_people, area])
+            training_image = 0; test_image = 0; person_image = 0; subject_number = 0; training_names = []; test_names = []
+            for subject in subjects:
+                for k in range(1, images_per_person + 1):
+                    a = im.imread(images_directory + '/' + subject + '/{}'.format(k) + '.pgm')
+                    if person_image < training_n:
+                        images[training_image, :] = (np.reshape(a, [1, area]) - 127.5) / 127.5
+                        training_names.append(str(subject))
+                        training_image += 1
+                    else:
+                        imagetst[test_image, :] = (np.reshape(a, [1, area]) - 127.5) / 127.5
+                        test_names.append(str(subject))
+                        test_image += 1
+                    person_image += 1
+                subject_number += 1
+                if subject_number > number_of_people - 1:
+                    break
+                person_image = 0
 
             # CARA MEDIA
             meanimage = np.mean(images, 0)
@@ -75,7 +98,7 @@ class PCA(object):
                 # entreno
                 clf = svm.LinearSVC()
                 clf.fit(improy, person.ravel())
-                accs[neigen] = clf.score(imtstproy, persontst.ravel())
+                accs[neigen] = clf.score(imtstproy, imagetst)
                 print('Precisión con {0} autocaras: {1} %\n'.format(neigen, accs[neigen] * 100))
 
             fig, axes = plt.subplots(1, 1)
@@ -96,7 +119,7 @@ class PCA(object):
             B = V[0:60, :]
             improy = np.dot(images, np.transpose(B))
             clf = svm.LinearSVC()
-            clf.fit(improy, trainingNames)
+            clf.fit(improy, training_names)
             picture -= meanimage
             pictureProy = np.dot(picture, B.T)
             print("Subject is: {} \n".format(clf.predict(pictureProy)[0]))
