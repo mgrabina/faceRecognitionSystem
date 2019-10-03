@@ -6,7 +6,7 @@ def main():
 
 	config = configparser.ConfigParser()
 	config.read('config.ini')
-	method = parser.get('ACTION', 'METHOD')
+	method = config.get('ACTION', 'METHOD')
 	
     # pca = PCA()
     # pca.test()
